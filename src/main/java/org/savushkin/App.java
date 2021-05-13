@@ -6,11 +6,9 @@ import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Lets hack (kinda) this bitch ethically (just unziping and unraring lmao)
@@ -20,7 +18,7 @@ import java.nio.file.Paths;
  */
 public class App {
     static Archiver tarArchiver = ArchiverFactory.createArchiver(ArchiveFormat.TAR);
-   static Archiver zipArchiver = ArchiverFactory.createArchiver(ArchiveFormat.ZIP);
+    static Archiver zipArchiver = ArchiverFactory.createArchiver(ArchiveFormat.ZIP);
 
     private static String getFileNameWithoutType(String name) {
         StringBuilder stringBuilder = new StringBuilder(name);
@@ -34,24 +32,22 @@ public class App {
 
     public static void showFile(File file) throws IOException {
         if (!file.toString().contains(".zip") && !file.toString().contains(".tar")) {
-            for (File f: file.listFiles()) {
+            for (File f : file.listFiles()) {
                 System.out.println(f);
             }
-        }
-        else {
+        } else {
             if (file.toString().contains(".zip")) {
                 zipArchiver.extract(file, file.getParentFile());
-            }
-            else if (file.toString().contains(".tar")) {
+            } else if (file.toString().contains(".tar")) {
                 tarArchiver.extract(file, file.getParentFile());
-            }
-            else
+            } else
                 return;
-            for (File t: file.getParentFile().listFiles()) {
+            for (File t : file.getParentFile().listFiles()) {
                 if (t.getName().contentEquals(getFileNameWithoutType(file.getName()))) {
-                    for (File ts: t.listFiles()) {
+                    for (File ts : t.listFiles()) {
                         if (ts.getName().contains(".zip") || ts.getName().contains(".tar")) {
-                            showFile(ts);
+                            Files.move(ts.toPath(), Path.of(".").toRealPath().resolve(ts.toPath().getFileName()));
+                            showFile(Path.of(".").toRealPath().resolve(ts.toPath().getFileName()).toFile());
                         }
                     }
                 }
